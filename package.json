@@ -1,0 +1,20 @@
+{
+  "name": "Milestone-Backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ManavLohabade/Milestone-Backend.git",
+  "author": "ManavLohabade <manavlohabade26@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.10.2",
+    "multer": "^1.4.5-lts.1",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
