@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
+const Product = require("./productModel");
 
 const ProductSchema = new mongoose.Schema({
   productName: {

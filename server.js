@@ -1,16 +1,23 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db'); 
+const connectDB = require('./config/db');
+const multer = require('multer'); 
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 
-
 const app = express();
 app.use(cors());
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+app.use(upload.single('image')); 
 
 connectDB(); 
+
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 

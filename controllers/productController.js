@@ -36,23 +36,20 @@ const getProductById = async (req, res) => {
 // Create a new product
 // POST /api/products
 const createProduct = async (req, res) => {
-  const {
-    productName,
-    code,
-    category,
-    price,
-    quantity,
-    unit,
-    description,
-    imageUrl,
-  } = req.body;
-
-  // Basic validation for required fields
-  if (!productName || !code || !category || !price || !quantity || !unit) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
   try {
+    console.log("Received Body:", req.body); 
+    console.log("Received File:", req.file);
+    const { productName, code, category, price, quantity, unit, description } = req.body;
+
+    if (!productName || !code || !category || !price || !quantity || !unit) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
+    const imageUrl = `uploads/${req.file.filename}`;
+    // const imageUrl = req.file.buffer.toString("base64"); 
+
     const newProduct = new Product({
       productName,
       code,
@@ -69,6 +66,22 @@ const createProduct = async (req, res) => {
   } catch (error) {
     console.error("Error creating product:", error);
     res.status(500).json({ message: "Error creating product", error });
+  }
+};
+
+// Delete a product by ID
+// DELETE /api/products/:id
+const deleteProduct = async (req, res) => {
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+
+    if (!deletedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting product", error });
   }
 };
 
@@ -89,22 +102,6 @@ const updateProduct = async (req, res) => {
     res.status(200).json(updatedProduct);
   } catch (error) {
     res.status(500).json({ message: "Error updating product", error });
-  }
-};
-
-// Delete a product by ID
-// DELETE /api/products/:id
-const deleteProduct = async (req, res) => {
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-
-    if (!deletedProduct) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    res.status(200).json({ message: "Product deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting product", error });
   }
 };
 
