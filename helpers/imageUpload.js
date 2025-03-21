@@ -75,4 +75,4 @@ module.exports = {
     deleteImageFile,
     getImageUrl,
     handleImageUploadError
-};
+}; 
