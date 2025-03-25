@@ -1,6 +1,22 @@
 const { body, validationResult } = require("express-validator");
 
 const validateProduct = [
+
+  (req, res, next) => {
+    if (req.body.data) {
+      try {
+        const parsedData = JSON.parse(req.body.data);
+        req.body = { ...req.body, ...parsedData };
+      } catch (error) {
+        return res.status(400).json({ 
+          message: "Invalid JSON data", 
+          error: error.message 
+        });
+      }
+    }
+    next();
+  },
+
   body("productName")
     .trim()
     .notEmpty()
@@ -47,7 +63,6 @@ const validateProduct = [
     .isLength({ max: 500 })
     .withMessage("Description cannot exceed 500 characters"),
 
-  // Custom validation for image
   (req, res, next) => {
     if (!req.file && req.method === 'POST') {
       return res.status(400).json({ message: "Image is required for new products" });
@@ -59,7 +74,6 @@ const validateProduct = [
         return res.status(400).json({ message: "Image size must be less than 5MB" });
       }
       
-      // Check file type
       const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!allowedTypes.includes(req.file.mimetype)) {
         return res.status(400).json({ 
@@ -71,7 +85,6 @@ const validateProduct = [
     next();
   },
 
-  // Check for validation errors
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
