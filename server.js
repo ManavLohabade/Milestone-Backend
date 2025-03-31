@@ -1,11 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const quotationRoutes = require('./routes/quotationRoutes');
 
 const app = express();
+
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true
@@ -16,23 +19,27 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/uploads', express.static('uploads'));
 
-connectDB().then(() => {
-  console.log('Database connected successfully');
-}).catch(err => {
-  console.error('Database connection error:', err);
-  process.exit(1);
-});
+connectDB()
+  .then(() => {
+    console.log('Database connected successfully');
+  })
+  .catch(err => {
+    console.error('Database connection error');
+    process.exit(1);
+  });
 
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/quotations', quotationRoutes);
 
 app.use((err, req, res, next) => {
-  console.error('Error:', err.message);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({ 
+    message: 'Something went wrong!',
+    status: statusCode
+  });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
+app.listen(process.env.PORT, () => {
+  console.log('Server started successfully');
 });
